@@ -1,0 +1,94 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="style.css" media="screen"/>
+	<title>Lithology Predictor | Unsupervised</title>
+</head>
+<body>
+
+	 <div class="navbar">
+		<a href="index.html">Lithology Predictions</a>
+		<a class="active" href="unsupervised.html">Unsupervised</a>
+		<a href="supervised.html">Supervised</a>
+	</div> 
+
+	<h1>Unsupervised Predictions</h1>
+
+	<div class="dataset-div">
+		<h2>Input Dataset</h2>
+		<p>Input desired dataset here.</p>
+		<div class="dataset-box">
+			<div id="add-dataset-input-id-div" class="dataset-content-div">
+				<h3>Select data type.</h3>
+				Please select the data-type of inputed file.
+				<br>
+				<br>
+				<div class="dropdown">
+					<button class="button">Data-type ▼</button>
+					<div class="dropdown-content">
+						<a id="query-filter-gt">LAS</a>
+						<a id="query-filter-eq">ASCII</a>
+					</div>
+				</div> 
+			</div>
+			<div id="add-dataset-input-kind-div" class="dataset-content-div">
+				<h3>Upload Dataset</h3>
+				Please upload your data file here:
+				<ol>
+					<li>The kind must be .LAS or .ASCII.</li>
+				</ol>
+				<input type="file" id="input-add-dataset-upload-zip" accept=".LAS, .ASCII">
+			</div>
+			<div id="add-dataset-input-kind-div" class="dataset-content-div">
+				<h3>Select Classifier model</h3>
+				Please select your desired classification algorithm here:
+				<br>
+				<br>
+				<div class="dropdown">
+					<button class="button">Model ▼</button>
+					<div class="dropdown-content">
+						<a id="query-filter-gt">K-Means</a>
+						<a id="query-filter-eq">Ward (Hierarchical)</a>
+						<a id="query-filter-eq">Complete (Hierarchical)</a>
+					</div>
+				</div> 
+			</div>
+		</div>
+	</div>
+
+	<div class="dataset-div">
+		<h2>Display Visual Diagrams</h2>
+		<p>Here you can see any diagrams that help you select the number of clusters for your model</p>
+		<div id="list-datasets-button-div">
+			<button id="list-datasets-button" class="button" >Display Models!</button>
+		</div>
+	</div>
+
+	<div class="dataset-div">
+		<h2>Select Hyper-Parameters</h2>
+		<p>Here you can input the values of hyper-parameters for your model.</p>
+		<div class="dataset-box">
+			<div id="remove-dataset-input-div" class="dataset-content-div">
+				<h3>Set number of clusters</h3>
+				Here you can enter the number of clusters you desire for you model based on the above diagrams.
+				<br>
+				<br>
+				<input type="text" placeholder="Enter #..." id="input-remove-dataset-id">
+			</div>
+	</div>
+
+	<div class="dataset-div">
+		<h2>Display Lithology</h2>
+		<p>Here you can see the predicted lithology of your model as well as the inputed well-logs</p>
+			<div id="list-datasets-button-div">
+				<button id="list-datasets-button" class="button" >Display!</button>
+			</div>
+	</div>
+
+	
+
+	<script type="text/javascript" src="/js/datasets.js"></script>
+</body>
+</html>
