@@ -1,62 +1,91 @@
 #imports
 import numpy as np
 import pandas as pd
-import lasio 
-from las_py import Laspy
 import matplotlib.pyplot as plt
-from sklearn.pipeline import make_pipeline
+from helpers import parse_zip 
+from helpers import visualizer
 from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
 from yellowbrick.cluster import SilhouetteVisualizer
-from matplotlib.colors import ListedColormap
-from sklearn.preprocessing import normalize
-from sklearn.preprocessing import MinMaxScaler
-from yellowbrick.cluster import KElbowVisualizer
 
-def get_keys():
-    las = lasio.read("./data/100163203803W400.las")
-    mnemonic = las.keys()
-    return mnemonic
+labels = None
 
-def get_data():
-    data = np.loadtxt("data parameter", skiprow = X)
-    data = pd.DataFrame(data, columms=get_keys())
-    return data
-
-def transform_data():
-    x = get_data().iloc[:,1:6]
+def transform_data(data):
+    x = data.iloc[:,1:6]
     x.drop('NPHI', inplace=True, axis=1)
     return x
 
-def print_wcss():
-    wcss = []
-    for i in range(1, 11):
-			kmeans = KMeans(n_clusters = i, init='k-means++', random_state = 42, n_init=10)
-			kmeans.fit(x)
-			wcss.append(kmeans.inertia_)
-    
-		plt.plot(range(1, 11), wcss)
-		plt.xlabel('Number of clusters')
-		plt.ylabel('WCSS') 	
-    
-def print_silhouette():
+def print_elbow(x):
+	wcss = []
+	for i in range(1, 11):
+		kmeans = KMeans(n_clusters = i, init='k-means++', random_state = 42, n_init=10)
+		kmeans.fit(x)
+		wcss.append(kmeans.inertia_)
+
+	plt.plot(range(1, 11), wcss)
+	plt.xlabel('Number of clusters')
+	plt.ylabel('WCSS')
+	plt.show()
+
+def print_silhouette(x):
 	fig, ax = plt.subplots(3, 2, figsize=(15,8))
 	for i in [2, 3, 4, 5, 6]:
-    km = KMeans(n_clusters=i, init='k-means++', n_init=10, max_iter=100, random_state=42)
-    q, mod = divmod(i, 2)
-    
-    visualizer = SilhouetteVisualizer(km, colors='yellowbrick', ax=ax[q-1][mod])
-    visualizer.fit(x) 
-    print("For", i, "clusters,  the average Silhouette score is: ", visualizer.silhouette_score_)
+		km = KMeans(n_clusters=i, init='k-means++', n_init=10, max_iter=100, random_state=42)
+		q, mod = divmod(i, 2)
 
-def train():
-	kmeans = KMeans(n_clusters = 4, init = "k-means++", random_state = 42, n_init = 10)
-	y_kmeans = kmeans.fit_predict(x)
-	data_with_clusters = data.copy()
-	data_with_clusters['Clusters'] = y_kmeans
+		visualizer = SilhouetteVisualizer(km, colors='yellowbrick', ax=ax[q-1][mod])
+		visualizer.fit(x)
+		print("For", i, "clusters,  the average Silhouette score is: ", visualizer.silhouette_score_)
+
+	plt.show()
     
 
+def predict(data, x, num_clusters: int):
+	global labels
+	kmeans = KMeans(n_clusters = num_clusters, init = "k-means++", random_state = 42, n_init = 10)
+	kmeans = kmeans.fit(x)
 
-    
+	# include Lithology column in data
+	labels = kmeans.labels_
+	data['Lithology'] = pd.DataFrame(kmeans.labels_, columns=['Lithology'])
+
+  
+	output = pd.DataFrame(kmeans.cluster_centers_, columns=['GR', 'PE', 'DEN', 'AC'])
+	output = np.round_(output, decimals=2)
+	return output
+
+def classify(output):
+	for i in range(0, len(output)):
+		if (output.at[i, 'GR'] < 45 and 2.0 <= output.at[i, 'DEN'] <= 2.4):
+			output.at[i, 'Lithology'] = 'Sandstone'
+		elif (output.at[i, 'GR'] < 80 and output.at[i, 'DEN'] < 2.0):
+			output.at[i, 'Lithology'] = 'Coal'
+		elif (output.at[i, 'GR'] < 80 and output.at[i, 'DEN'] > 2.45):
+			output.at[i, 'Lithology'] = 'Limestone'
+		elif (45 <= output.at[i, 'GR'] <= 80  and 2.0 <= output.at[i, 'DEN'] <= 2.4):
+			output.at[i, 'Lithology'] = 'Siltstone'
+		elif (output.at[i, 'GR'] >  80):
+			output.at[i, 'Lithology'] = 'Shale'
+
+def main():
+	global labels
+	print("hello world")
+	data = parse_zip.get_data("../../data/100120603903W400_log.las", 32)
+	#print(data)
+
+	x_train = transform_data(data)
+	#print(x_train)
+	#print_elbow(x_train)
+	#print_silhouette(x_train)
+	output = predict(data, x_train, 4)
+	print(output)
+	classify(output)
+	#print(output)
+	visualizer.main(data, labels)
+
+
+if __name__ == "__main__":
+	main()
+
+
 
 
