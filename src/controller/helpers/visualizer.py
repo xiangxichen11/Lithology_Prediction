@@ -1,28 +1,19 @@
 #imports
 import numpy as np
-import pandas as pd
-import lasio 
-from las_py import Laspy
 import matplotlib.pyplot as plt
-from sklearn.pipeline import make_pipeline
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
-from yellowbrick.cluster import SilhouetteVisualizer
-from matplotlib.colors import ListedColormap
-from sklearn.preprocessing import normalize
-from sklearn.preprocessing import MinMaxScaler
-from yellowbrick.cluster import KElbowVisualizer
 
 
 def main(data, labels):
     logs = data.columns[1:]
-    rows,cols = 1,6
+    print(logs)
+    rows,cols = 1,len(logs)+1
     fig,ax = plt.subplots(nrows=rows, ncols=cols, figsize=(12,6), sharey=True)
     #colors = lithology_colors.values()
     #cmap = ListedColormap(colors)
     plt.suptitle('Well-100163203803W400', size=15)
-    for i in range(cols):
+    for i in range(0, cols):
         if i < cols-1:
+            print(i)
             ax[i].plot(data[logs[i]], data.DEPTH, color='blue', lw=0.5)
             ax[i].set_title('%s' % logs[i])
             ax[i].grid(which='minor', linestyle=':', linewidth='0.5', color='black')

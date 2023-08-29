@@ -11,7 +11,6 @@ labels = None
 
 def transform_data(data):
     x = data.iloc[:,1:6]
-    x.drop('NPHI', inplace=True, axis=1)
     return x
 
 def print_elbow(x):
@@ -43,14 +42,13 @@ def predict(data, x, num_clusters: int):
 	global labels
 	kmeans = KMeans(n_clusters = num_clusters, init = "k-means++", random_state = 42, n_init = 10)
 	kmeans = kmeans.fit(x)
-
+  
 	# include Lithology column in data
 	labels = kmeans.labels_
-	data['Lithology'] = pd.DataFrame(kmeans.labels_, columns=['Lithology'])
 
-  
 	output = pd.DataFrame(kmeans.cluster_centers_, columns=['GR', 'PE', 'DEN', 'AC'])
 	output = np.round_(output, decimals=2)
+
 	return output
 
 def classify(output):
@@ -68,18 +66,12 @@ def classify(output):
 
 def main():
 	global labels
-	print("hello world")
-	data = parse_zip.get_data("../../data/100120603903W400_log.las", 32)
-	#print(data)
-
-	x_train = transform_data(data)
-	#print(x_train)
-	#print_elbow(x_train)
-	#print_silhouette(x_train)
+	data, x_train = parse_zip.get_data("../../data/100163203803W400.las")
+	print_elbow(data)
+	print_silhouette(data)
 	output = predict(data, x_train, 4)
 	print(output)
 	classify(output)
-	#print(output)
 	visualizer.main(data, labels)
 
 

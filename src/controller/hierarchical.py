@@ -16,11 +16,6 @@ from yellowbrick.cluster import KElbowVisualizer
 
 labels = None
 
-def transform_data(data):
-    x = data.iloc[:,1:6]
-    x.drop('NPHI', inplace=True, axis=1)
-    return x
-
 def dendrogram(x):
 		plt.figure(figsize=(10, 7))
 		plt.title("Customer Dendograms")
@@ -78,19 +73,12 @@ def classify(output):
 
 def main():
 	global labels
-	print("hello world")
-	data = parse_zip.get_data("../../data/100163203803W400.las", 52)
-	print(data)
-
-	x_train = transform_data(data)
-	print(x_train)
+	data, x_train = parse_zip.get_data("../../data/100163203803W400.las")
 	dendrogram(x_train)
-	#print_elbow(x_train)
-	#print_silhouette(x_train)
+	print_elbow(x_train)
+	print_silhouette(x_train)
 	output = predict(data, x_train, 5)
-	print(output)
 	classify(output)
-	print(output)
 	visualizer.main(data, labels)
 
 

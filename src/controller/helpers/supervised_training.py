@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 import joblib 
 
 def knn_train(data):
-  facies = np.loadtxt('../../data/100163203803W400_Lithology_Facies.las', skiprows=48)
+  facies = np.loadtxt('../../../data/100163203803W400_Lithology_Facies.las', skiprows=48)
   #facies = pd.DataFrame(facies, columns=['DEPTH', 'Lithology'])
   for face in facies:
     if (face[1] == -999.25):
@@ -38,7 +38,7 @@ def knn_train(data):
   y_pred = pipe.predict(x)
 
   #save model
-  filename = 'models/knn_model.sav'
+  filename = '../models/knn_model.sav'
   joblib.dump(pipe, filename)
 
 def get_knn_model(filename):
@@ -63,15 +63,15 @@ def xgboost_train(data):
                         subsample=0.9, colsample_bytree=0.9,
                         eval_metric='mlogloss', reg_lambda=1500)
   model.fit(X_train, Y_train)
-  filename = 'models/xgboost_model.sav'
+  filename = '../models/xgboost_model.sav'
   joblib.dump(model, filename)
 
 def get_xgboost_model(filename):
   return joblib.load(filename)
 
 def main():
-   data_knn = parse_zip.get_data('../../data/100163203803W400.las', 52)
-   data_xgboost = parse_zip.get_data('../../data/100163203803W400_LOG.las', 53)
+   data_knn = parse_zip.get_supervised_training_data('../../../data/100163203803W400.las', 52)
+   data_xgboost = parse_zip.get_supervised_training_data('../../../data/100163203803W400_LOG.las', 53)
    knn_train(data_knn)
    xgboost_train(data_xgboost)
 
