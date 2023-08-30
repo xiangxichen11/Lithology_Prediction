@@ -1,13 +1,17 @@
 #imports
 import numpy as np
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
-from helpers import parse_zip 
-from helpers import visualizer
+from controller.helpers import parse_zip 
+from controller.helpers import visualizer
 from sklearn.cluster import KMeans
 from yellowbrick.cluster import SilhouetteVisualizer
+import os
+import time
 
 labels = None
+hyperparameter: int = 0
 
 def transform_data(data):
     x = data.iloc[:,1:6]
@@ -23,7 +27,7 @@ def print_elbow(x):
 	plt.plot(range(1, 11), wcss)
 	plt.xlabel('Number of clusters')
 	plt.ylabel('WCSS')
-	plt.show()
+	plt.savefig('../frontend/images/k-means_elbow')
 
 def print_silhouette(x):
 	fig, ax = plt.subplots(3, 2, figsize=(15,8))
@@ -35,7 +39,7 @@ def print_silhouette(x):
 		visualizer.fit(x)
 		print("For", i, "clusters,  the average Silhouette score is: ", visualizer.silhouette_score_)
 
-	plt.show()
+	plt.savefig('../frontend/images/k-means_sil')
     
 
 def predict(data, x, num_clusters: int):
@@ -64,19 +68,27 @@ def classify(output):
 		elif (output.at[i, 'GR'] >  80):
 			output.at[i, 'Lithology'] = 'Shale'
 
-def main():
+def main(file):
 	global labels
-	data, x_train = parse_zip.get_data("../../data/100163203803W400.las")
+	global hyperparameter
+	matplotlib.use('agg')
+	data, x_train = parse_zip.get_data(file)
+	print(data)
 	print_elbow(data)
 	print_silhouette(data)
-	output = predict(data, x_train, 4)
-	print(output)
+	while(hyperparameter == 0):
+		time.sleep(5)
+	
+	output = predict(data, x_train, hyperparameter)
 	classify(output)
 	visualizer.main(data, labels)
+hyperparameter = 0
 
 
 if __name__ == "__main__":
-	main()
+	import sys
+	main(sys.argv[1:])
+	#main()
 
 
 

@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 
 def main(data, labels):
     logs = data.columns[1:]
-    print(logs)
     rows,cols = 1,len(logs)+1
     fig,ax = plt.subplots(nrows=rows, ncols=cols, figsize=(12,6), sharey=True)
     #colors = lithology_colors.values()
@@ -24,4 +23,5 @@ def main(data, labels):
             ax[i].axes.get_xaxis().set_visible(False)
             ax[i].axes.get_yaxis().set_visible(False)
             ax[i].set_title('Lithology')
-    plt.show()
+    
+    plt.savefig("../frontend/images/final")

@@ -2,24 +2,20 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from helpers import parse_zip 
-from helpers import visualizer
-from sklearn.preprocessing import StandardScaler
-from matplotlib.colors import ListedColormap
-from yellowbrick.cluster import SilhouetteVisualizer
+from controller.helpers import parse_zip 
+from controller.helpers import visualizer
 from sklearn.cluster import AgglomerativeClustering
 from scipy.cluster.hierarchy import dendrogram, linkage
 import scipy.cluster.hierarchy as shc
-from sklearn.preprocessing import normalize
 from sklearn.neighbors import NearestCentroid
 from yellowbrick.cluster import KElbowVisualizer
 
 labels = None
 
-def dendrogram(x):
+def dendrogram(x, linkage):
 		plt.figure(figsize=(10, 7))
 		plt.title("Customer Dendograms")
-		dendrogram = shc.dendrogram(shc.linkage(x, method='ward'))
+		dendrogram = shc.dendrogram(shc.linkage(x, method=linkage))
 
 		plt.show()
 
@@ -41,9 +37,9 @@ def print_silhouette(x):
 	# Finalize and render figure
 	visualizer.show()
 
-def predict(data, x, num_clusters: int):
+def predict(data, x, linkage, num_clusters: int):
 	global labels
-	model = AgglomerativeClustering(n_clusters=num_clusters, affinity='euclidean', linkage='ward')
+	model = AgglomerativeClustering(n_clusters=num_clusters, affinity='euclidean', linkage=linkage)
 	y_model = model.fit_predict(x)
 	data_with_clusters = data.copy()
 	data_with_clusters['Clusters'] = y_model
@@ -71,15 +67,16 @@ def classify(output):
 			output.at[i, 'Lithology'] = 'Shale'
 
 
-def main():
+def main(file, linkage):
 	global labels
-	data, x_train = parse_zip.get_data("../../data/100163203803W400.las")
-	dendrogram(x_train)
-	print_elbow(x_train)
-	print_silhouette(x_train)
-	output = predict(data, x_train, 5)
-	classify(output)
-	visualizer.main(data, labels)
+	data, x_train = parse_zip.get_data(file)
+	print(data)
+	# dendrogram(x_train, linkage)
+	# print_elbow(x_train)
+	# print_silhouette(x_train)
+	# output = predict(data, x_train, 5)
+	# classify(output)
+	# visualizer.main(data, labels)
 
 
 if __name__ == "__main__":
