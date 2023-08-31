@@ -1,0 +1,98 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="style.css" media="screen"/>
+	<title>Lithology Predictor | Unsupervised</title>
+</head>
+<body>
+
+	 <div class="navbar">
+		<a href="index.html">Lithology Predictions</a>
+		<a class="active" href="unsupervised">Unsupervised</a>
+		<a href="supervised">Supervised</a>
+	</div> 
+
+	<h1>Unsupervised Predictions</h1>
+
+	<div class="dataset-div">
+		<h2>Input Dataset</h2>
+		<p>Input desired dataset here.</p>
+		<div class="dataset-box">
+			<div id="add-dataset-input-kind-div" class="dataset-content-div">
+				<h3>Select Classifier model</h3>
+				Please select your desired classification algorithm here:
+				<br>
+				<br>
+					<form action="/unsupervised_render" method="POST", enctype="multipart/form-data">
+						<label for="file_input">Upload your file:</label>
+						<input type="file" id="file_input" name="file_input" accept=".LAS, .ASCII">
+						<br>
+						<br>
+						<label for="dropdown">Select an option:</label>
+						<select id="dropdown" name="user_input">
+								<option value="K-Means">K-Means</option>
+								<option value="ward">Ward (Hierarchical)</option>
+								<option value="complete">Complete (Hierarchical)</option>
+						</select>
+						<button type="submit">Submit</button>
+				 </form>
+				</div> 
+			</div>
+		</div>
+	</div>
+
+	<div class="dataset-div">
+		<h2>Display Visual Diagrams</h2>
+		<p>Here you can see any diagrams that help you select the number of clusters for your model</p>
+		<div id="list-datasets-button-div">
+			<form method="POST" action="/display_images">
+        <button id="list-datasets-button" class="button" >Display Models!</button>
+    	</form>
+			<div class = "display_images">
+				{% if image_files %}
+					{% for image_file in image_files %}
+							<img src="{{url_for('serve_static',filename=image_file)}}">
+					{% endfor %}
+				{% else %}
+				{% endif %}
+			</div>
+		</div>
+	</div>
+
+	<div class="dataset-div">
+		<h2>Select Hyper-Parameters</h2>
+		<p>Here you can input the values of hyper-parameters for your model.</p>
+		<div class="dataset-box">
+			<div id="remove-dataset-input-div" class="dataset-content-div">
+				<h3>Set number of clusters</h3>
+				Here you can enter the number of clusters you desire for you model based on the above diagrams.
+				<br>
+				<br>
+				<form action="/hyperparameter" method="POST", enctype="multipart/form-data">
+					<label for="user_input"></label>
+					<input type="text" placeholder="Enter #..." id="user_input" name="user_input">
+					<button type="submit">Submit</button>
+				</form>
+			</div>
+	</div>
+
+	<div class="dataset-div">
+		<h2>Display Lithology</h2>
+		<p>Here you can see the predicted lithology of your model as well as the inputed well-logs</p>
+			<div id="list-datasets-button-div">
+				<form method="POST" action="/display_lithology	">
+					<button id="list-datasets-button" class="button" >Display Models!</button>
+				</form>
+				<div class = "display_images">
+					{% if final %}
+							<img src="{{ url_for('serve_static', filename=final[0]) }}" alt="Image">
+					{% endif %}
+				</div>
+			</div>
+			
+	</div>
+
+</body>
+</html>

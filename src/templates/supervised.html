@@ -1,0 +1,60 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="style.css" media="screen"/>
+	<title>Lithology Predictor | Supervised</title>
+</head>
+<body>
+	<div class="navbar">
+		<a href="index.html">Lithology Predictions</a>
+		<a href="unsupervised">Unsupervised</a>
+		<a class="active" href="supervised">Supervised</a>
+	</div> 
+
+	<h1>Supervised Predictions</h1>
+
+	<div class="dataset-div">
+		<h2>Input Dataset</h2>
+		<p>Input desired dataset here.</p>
+		<div class="dataset-box">
+			<div id="add-dataset-input-kind-div" class="dataset-content-div">
+				<h3>Select Classifier model</h3>
+				Please select your desired classification algorithm here:
+				<br>
+				<br>
+				<form action="/supervised_render" method="POST", enctype="multipart/form-data">
+					<label for="file_input">Upload your file:</label>
+					<input type="file" id="file_input" name="file_input" accept=".LAS, .ASCII">
+					<br>
+					<br>
+					<label for="dropdown">Select an option:</label>
+					<select id="dropdown" name="user_input">
+						<option value='knn'>KNN</option>
+						<option value='xgboost'>XGBOOST</option>
+				</select>
+				<button type="submit">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="dataset-div">
+		<h2>Display Lithology</h2>
+		<p>Here you can see the predicted lithology of your model as well as the inputed well-logs</p>
+		<div class="dataset-box">
+			<div id="list-datasets-button-div">
+				<form method="POST" action="/display_supervised">
+					<button id="list-datasets-button" class="button" >Display Models!</button>
+				</form>
+				<div class = "display_images">
+					{% if final %}
+						<img src="{{ final[0] }}">
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

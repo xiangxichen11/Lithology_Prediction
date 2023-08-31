@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib
 from controller.helpers import parse_zip 
 from controller.helpers import visualizer
 from sklearn.cluster import AgglomerativeClustering
@@ -9,37 +10,36 @@ from scipy.cluster.hierarchy import dendrogram, linkage
 import scipy.cluster.hierarchy as shc
 from sklearn.neighbors import NearestCentroid
 from yellowbrick.cluster import KElbowVisualizer
+import time
+import sys
 
 labels = None
+hyperparameter:int = 0
 
 def dendrogram(x, linkage):
-		plt.figure(figsize=(10, 7))
-		plt.title("Customer Dendograms")
-		dendrogram = shc.dendrogram(shc.linkage(x, method=linkage))
+	plt.figure(figsize=(10, 7))
+	plt.title("Customer Dendograms")
+	shc.dendrogram(shc.linkage(x, method=linkage))
 
-		plt.show()
+	plt.savefig('templates/images/hier_dendro')
 
 def print_elbow(x):
 	agglo = AgglomerativeClustering()
-	# k is range of number of clusters.
-	visualizer = KElbowVisualizer(agglo, k=(2,30), timings=False)
-	# Fit data to visualizer
-	visualizer.fit(x)
-	# Finalize and render figure
-	visualizer.show()
+	fig, ax1 = plt.subplots(figsize=(9, 6)) 
+	viza = KElbowVisualizer(agglo, k=(2,30), timings=False, ax=ax1) 
+	viza.fit(x)
+	viza.show("templates/images/hier_elbow")
+	viza.poof()
 
-def print_silhouette(x):
-	agglo = AgglomerativeClustering()
-	# k is range of number of clusters.
-	visualizer = KElbowVisualizer(agglo, k=(2,30), metric='silhouette', timings=False)
-	# Fit data to visualizer
-	visualizer.fit(x)
-	# Finalize and render figure
-	visualizer.show()
+	fig, ax2 = plt.subplots(figsize=(9, 6)) 
+	vizb = KElbowVisualizer(agglo, k=(2,30), metric='silhouette', timings=False, ax=ax2)
+	vizb.fit(x)
+	vizb.show("templates/images/hier_sil")
+
 
 def predict(data, x, linkage, num_clusters: int):
 	global labels
-	model = AgglomerativeClustering(n_clusters=num_clusters, affinity='euclidean', linkage=linkage)
+	model = AgglomerativeClustering(n_clusters=num_clusters, metric='euclidean', linkage=linkage)
 	y_model = model.fit_predict(x)
 	data_with_clusters = data.copy()
 	data_with_clusters['Clusters'] = y_model
@@ -69,15 +69,18 @@ def classify(output):
 
 def main(file, linkage):
 	global labels
+	global hyperparameter
+	matplotlib.use('agg') 
+	hyperparameter = 0
 	data, x_train = parse_zip.get_data(file)
-	print(data)
-	# dendrogram(x_train, linkage)
-	# print_elbow(x_train)
-	# print_silhouette(x_train)
-	# output = predict(data, x_train, 5)
-	# classify(output)
-	# visualizer.main(data, labels)
+	dendrogram(x_train, linkage)
+	print_elbow(x_train)
+	while (hyperparameter == 0):
+		time.sleep(1)
+	output = predict(data, x_train, linkage, hyperparameter)
+	classify(output)
+	visualizer.main(data, labels)
 
 
 if __name__ == "__main__":
-	main()
+	main(sys.argv[1:])

@@ -1,6 +1,6 @@
 #imports
 import numpy as np
-from helpers import parse_zip
+from controller.helpers import parse_zip
 from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
